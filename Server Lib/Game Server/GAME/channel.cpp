@@ -15705,31 +15705,31 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 		CHECK_SESSION_IS_AUTHORIZED("PlayPapelShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.papel_shop)
-			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
-					+ "] tentou jogar no Papel Shop, mas ele nao pode. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x790001));
+			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid)
+				+ "] tentou jogar no Papel Shop, mas ele nao pode. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x790001));
 
 		if (_session.m_pi.level < 1)
-			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao tem o level necessario[level=" 
-					+ std::to_string(_session.m_pi.level) + ", request=1]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 8, 0x5900108));
+			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao tem o level necessario[level="
+				+ std::to_string(_session.m_pi.level) + ", request=1]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 8, 0x5900108));
 
 		if (!sPapelShopSystem::getInstance().isLoad())
 			sPapelShopSystem::getInstance().load();
 
 		if (sPapelShopSystem::getInstance().isLimittedPerDay() && _session.m_pi.mi.papel_shop.remain_count <= 0)
-			throw exception("[channel::requestPlayPapelShop][Warning] player[UID=" + std::to_string(_session.m_pi.uid) 
+			throw exception("[channel::requestPlayPapelShop][Warning] player[UID=" + std::to_string(_session.m_pi.uid)
 				+ "] tentou jogar o Papel Shop Normal, mas o limite por dia esta ativado, e ele nao tem mais vezes no dia ele ja chegou ao seu limite.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x5900101));
 
 		auto coupon = sPapelShopSystem::getInstance().hasCoupon(_session);
 
 		if ((coupon == nullptr || coupon->STDA_C_ITEM_QNTD < 1) && _session.m_pi.ui.pang < sPapelShopSystem::getInstance().getPriceNormal())
-			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, ele nao tem Coupon e nem Pangs suficiente[value=" 
-					+ std::to_string(_session.m_pi.ui.pang) + ", request=" + std::to_string(sPapelShopSystem::getInstance().getPriceNormal()) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 2, 0x5900102));
+			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, ele nao tem Coupon e nem Pangs suficiente[value="
+				+ std::to_string(_session.m_pi.ui.pang) + ", request=" + std::to_string(sPapelShopSystem::getInstance().getPriceNormal()) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 2, 0x5900102));
 
 		auto balls = sPapelShopSystem::getInstance().dropBalls(_session);
 
 		if (balls.empty())
-			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao conseguiu sortear as bolas. Bug", 
-					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x5900103));
+			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao conseguiu sortear as bolas. Bug",
+				STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x5900103));
 
 		std::vector< stItem > v_item;
 		stItem item{ 0 };
@@ -15748,12 +15748,12 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 			bi.id = -1;
 			bi._typeid = el.ctx_psi._typeid;
 			bi.qntd = el.qntd;
-			
+
 			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1);
 
 			if (item._typeid == 0)
-				throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao conseguiu inicializar o Item[TYPEID=" 
-						+ std::to_string(bi._typeid) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 4, 0x5900104));
+				throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao conseguiu inicializar o Item[TYPEID="
+					+ std::to_string(bi._typeid) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 4, 0x5900104));
 
 			auto it = std::find_if(v_item.begin(), v_item.end(), [&](auto& el2) {
 				return el2._typeid == item._typeid;
@@ -15762,7 +15762,8 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 			if (it != v_item.end()) {	// Já tem o item soma as quantidades
 				it->qntd += item.qntd;
 				it->STDA_C_ITEM_QNTD = (short)it->qntd;
-			}else	// Não tem coloca ele no vector
+			}
+			else	// Não tem coloca ele no vector
 				it = v_item.insert(v_item.end(), item);
 
 #if defined(_WIN32)
@@ -15781,10 +15782,10 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 
 		// Add ao Server e DB
 		auto rai = item_manager::addItem(v_item, _session, 0, 0);
-		
+
 		if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
 			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao conseguiu adicionar o(s) Item(ns){"
-					+ ids + "}", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0x5900106));
+				+ ids + "}", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0x5900106));
 
 		// Delete Coupon e coloca no vector de att item, se tiver coupon
 		if (coupon != nullptr) {
@@ -15803,7 +15804,8 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 			// Add ao vector
 			v_item.push_back(item);
 
-		}else	// Não tem Coupon Tira Pangs do player
+		}
+		else	// Não tem Coupon Tira Pangs do player
 			_session.m_pi.consomePang(sPapelShopSystem::getInstance().getPriceNormal());
 
 		// Update Papel Shop Count Player. Se o limite por dia estiver habilitado, decrementa 1 do player
@@ -15812,8 +15814,8 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 		// Verificar se ganhou item Raro, se sim, cria um log no banco de dados
 		auto rare = std::for_each(balls.begin(), balls.end(), [&](auto& el) {
 			if (el.ctx_psi.tipo == PST_RARE) {
-				_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayNormal][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] ganhou Item Raro[TYPEID=" 
-						+ std::to_string(el.ctx_psi._typeid) + ", QNTD=" + std::to_string(el.qntd) + ", BALL_COLOR=" + std::to_string(el.color) + ", PROBABILIDADE=" + std::to_string(el.ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
+				_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayNormal][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] ganhou Item Raro[TYPEID="
+					+ std::to_string(el.ctx_psi._typeid) + ", QNTD=" + std::to_string(el.qntd) + ", BALL_COLOR=" + std::to_string(el.color) + ", PROBABILIDADE=" + std::to_string(el.ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
 
 				// Add +1 ao contador de item Rare Win no Papel Shop
 				sys_achieve.incrementCounter(0x6C400081u/*Rare Win*/);
@@ -15853,7 +15855,8 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 		if (sPapelShopSystem::getInstance().isLimittedPerDay()) {
 			p.addInt32(_session.m_pi.mi.papel_shop.remain_count);
 			p.addInt32(-2);												// Flag
-		}else {
+		}
+		else {
 			p.addInt32(-1);
 			p.addInt32(-3);												// Flag
 		}
@@ -15885,7 +15888,8 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 		// UPDATE Achievement ON SERVER, DB and GAME
 		sys_achieve.finish_and_update(_session);
 
-	}catch (exception& e) {
+	}
+	catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestPlayPapelShop][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -15897,133 +15901,141 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 	}
 };
 
-void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
-	REQUEST_BEGIN("PlayBigPapelShop");
+
+void channel::requestPlayPapelShopBIG(player& _session, packet *_packet) {
+	REQUEST_BEGIN("PlayPapelShop");
 
 	packet p;
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
-		CHECK_SESSION_IS_AUTHORIZED("PlayBigPapelShop");
+		// Verifica se a sessão está autorizada a executar essa ação.
+		CHECK_SESSION_IS_AUTHORIZED("PlayPapelShop");
 
+		// Verifica se o jogador está bloqueado para jogar no Papel Shop.
 		if (_session.m_pi.block_flag.m_flag.stBit.papel_shop)
-			throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
-					+ "] tentou jogar no Papel Shop, mas ele nao pode. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x790001));
+			throw exception("[channel::requestPlayPapelShopBIG][Erro] jogador[UID=" + std::to_string(_session.m_pi.uid)
+				+ "] tentou jogar no Papel Shop, mas está bloqueado. Pode ser Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x790001));
 
+		// Verifica se o jogador tem o nível necessário para jogar o Papel Shop.
 		if (_session.m_pi.level < 1)
-			throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Big, mas nao tem o level necessario[level=" 
-					+ std::to_string(_session.m_pi.level) + ", request=1]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 8, 0x5900108));
+			throw exception("[channel::requestPlayPapelShopBIG][Erro] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas não tem o nível necessário[level="
+				+ std::to_string(_session.m_pi.level) + ", pedido=1]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 8, 0x5900108));
 
+		// Carrega o sistema do Papel Shop, caso não tenha sido carregado.
 		if (!sPapelShopSystem::getInstance().isLoad())
 			sPapelShopSystem::getInstance().load();
 
+		// Verifica se o limite diário está ativado e se o jogador atingiu o limite de tentativas.
 		if (sPapelShopSystem::getInstance().isLimittedPerDay() && _session.m_pi.mi.papel_shop.remain_count <= 0)
-			throw exception("[channel::requestPlayBigPapelShop][Warning] player[UID=" + std::to_string(_session.m_pi.uid) 
-					+ "] tentou jogar o Papel Shop Big, mas o limite por dia esta ativado, e ele nao tem mais vezes no dia ele ja chegou ao seu limite.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x5900101));
+			throw exception("[channel::requestPlayPapelShopBIG][Aviso] jogador[UID=" + std::to_string(_session.m_pi.uid)
+				+ "] tentou jogar o Papel Shop BIG, mas o limite diário está ativado e ele não tem mais tentativas.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x5900101));
 
+		// Verifica se o jogador tem pang suficiente.
 		if (_session.m_pi.ui.pang < sPapelShopSystem::getInstance().getPriceBig())
-			throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Big, ele nao tem Pangs suficiente[value=" 
-					+ std::to_string(_session.m_pi.ui.pang) + ", request=" + std::to_string(sPapelShopSystem::getInstance().getPriceBig()) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 2, 0x5900102));
+			throw exception("[channel::requestPlayPapelShopBIG][Erro] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop BIG, mas não tem pang suficiente[value="
+				+ std::to_string(_session.m_pi.ui.pang) + ", pedido=" + std::to_string(sPapelShopSystem::getInstance().getPriceBig()) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 2, 0x5900102));
 
+		// Sorteia as bolas no sistema do Papel Shop.
 		auto balls = sPapelShopSystem::getInstance().dropBigBall(_session);
 
+		// Verifica se as bolas foram sorteadas corretamente.
 		if (balls.empty())
-			throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Big, mas nao conseguiu sortear as bolas. Bug", 
-					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x5900103));
+			throw exception("[channel::requestPlayPapelShopBIG][Erro] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop BIG, mas não conseguiu sortear as bolas. Bug",
+				STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x5900103));
 
-		std::vector< stItem > v_item;
+		// Vetor para armazenar os itens recebidos.
+		std::vector<stItem> v_item;
 		stItem item{ 0 };
 		BuyItem bi{ 0 };
 
 		SysAchievement sys_achieve;
 
-		// Reserva memória para o vector, não realocar depois a cada push_back ou insert
+		// Reserva memória para o vetor de itens.
 		v_item.reserve(balls.size());
 
+		// Processa os itens sorteados.
 		for (auto& el : balls) {
-
 			bi.clear();
 			item.clear();
 
 			bi.id = -1;
 			bi._typeid = el.ctx_psi._typeid;
 			bi.qntd = el.qntd;
-			
+
 			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1);
 
+			// Se o item não foi inicializado corretamente, lança um erro.
 			if (item._typeid == 0)
-				throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Big, mas nao conseguiu inicializar o Item[TYPEID=" 
-						+ std::to_string(bi._typeid) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 4, 0x5900104));
+				throw exception("[channel::requestPlayPapelShopBIG][Erro] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop BIG, mas não conseguiu inicializar o Item[TYPEID="
+					+ std::to_string(bi._typeid) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 4, 0x5900104));
 
+			// Verifica se o item já está presente no vetor, se sim, soma as quantidades.
 			auto it = std::find_if(v_item.begin(), v_item.end(), [&](auto& el2) {
 				return el2._typeid == item._typeid;
 			});
 
-			if (it != v_item.end()) {	// Já tem o item soma as quantidades
+			// Se o item já estiver no vetor, soma a quantidade.
+			if (it != v_item.end()) {
 				it->qntd += item.qntd;
 				it->STDA_C_ITEM_QNTD = (short)it->qntd;
-			}else	// Não tem coloca ele no vector
+			}
+			// Caso contrário, adiciona o item ao vetor.
+			else
 				it = v_item.insert(v_item.end(), item);
 
+#if defined(_WIN32)
+			el.item = it._Ptr;
+#elif defined(__linux__)
 			el.item = &(*it);
+#endif
 		}
 
-		// UPDATE ON SERVER
-
+		// Atualiza os itens no servidor e banco de dados.
 		std::string ids = "";
-
 		for (auto i = 0u; i < v_item.size(); ++i)
 			ids += ((i == 0) ? std::string("") : std::string(", ")) + "TYPEID=" + std::to_string(v_item[i]._typeid) + ", ID=" + std::to_string(v_item[i].id) + ", QNTD=" + std::to_string(v_item[i].STDA_C_ITEM_QNTD);
 
-		// Add ao Server e DB
+		// Adiciona os itens no servidor e no banco de dados.
 		auto rai = item_manager::addItem(v_item, _session, 0, 0);
-		
-		if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
-			throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Big, mas nao conseguiu adicionar o(s) Item(ns){"
-					+ ids + "}", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0x5900106));
 
-		// Tira Pangs do player
+		// Se a adição de itens falhar, lança um erro.
+		if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
+			throw exception("[channel::requestPlayPapelShopBIG][Erro] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop BIG, mas não conseguiu adicionar o(s) Item(ns){"
+				+ ids + "}", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0x5900106));
+
+		// Remove os pangs do jogador.
 		_session.m_pi.consomePang(sPapelShopSystem::getInstance().getPriceBig());
 
-		// Update Papel Shop Count Player. Se o limite por dia estiver habilitado, decrementa 1 do player
+		// **Aqui**: Atualiza os pangs do jogador e envia o pacote com o valor atualizado
+		p.init_plain((unsigned short)0xC8);  // Pacote para atualizar os pangs
+		p.addUint64(_session.m_pi.ui.pang);  // Adiciona a quantidade atualizada de pangs
+		packet_func::session_send(p, &_session, 1);
+
+		// Atualiza a contagem de tentativas do jogador no Papel Shop. Se o limite diário estiver habilitado, decrementa 1.
 		sPapelShopSystem::getInstance().updatePlayerCount(_session);
 
-		// Verificar se ganhou item Raro, se sim, cria um log no banco de dados
+		// Verifica se o jogador ganhou um item raro e cria um log no banco de dados.
 		auto rare = std::for_each(balls.begin(), balls.end(), [&](auto& el) {
 			if (el.ctx_psi.tipo == PST_RARE) {
-				_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayBig][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] ganhou Item Raro[TYPEID=" 
-						+ std::to_string(el.ctx_psi._typeid) + ", QNTD=" + std::to_string(el.qntd) + ", BALL_COLOR=" + std::to_string(el.color) + ", PROBABILIDADE=" + std::to_string(el.ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
+				_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayNormal][Log] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] ganhou Item Raro[TYPEID="
+					+ std::to_string(el.ctx_psi._typeid) + ", QNTD=" + std::to_string(el.qntd) + ", BALL_COLOR=" + std::to_string(el.color) + ", PROBABILIDADE=" + std::to_string(el.ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-				// Add +1 ao contador de item Rare Win no Papel Shop
+				// Adiciona +1 ao contador de item raro ganho no Papel Shop.
 				sys_achieve.incrementCounter(0x6C400081u/*Rare Win*/);
 
+				// Cria um log no banco de dados.
 				snmdb::NormalManagerDB::getInstance().add(19, new CmdInsertPapelShopRareWinLog(_session.m_pi.uid, el), channel::SQLDBResponse, this);
 			}
 		});
 
-		// UPDATE Achievement ON SERVER, DB and GAME
-
-		// Add +1 ao contador de jogo ao play Palpel Shop
+		// Atualiza o Achievement no servidor, banco de dados e jogo.
 		sys_achieve.incrementCounter(0x6C40004Au/*Play Papel Shop*/);
 
-		// Log
-		_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayBig][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] jogou Papel Shop Big e ganhou Item(ns){" + ids + "}", CL_FILE_LOG_AND_CONSOLE));
+		// Cria um log de ação no arquivo de log.
+		_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayNormal][Log] jogador[UID=" + std::to_string(_session.m_pi.uid) + "] jogou Papel Shop BIG e ganhou Item(ns){" + ids + "}", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON GAME
-
-		// Update Pangs
-		p.init_plain((unsigned short)0xC8);
-
-		p.addUint64(_session.m_pi.ui.pang);
-		p.addUint64(0);
-
-		packet_func::session_send(p, &_session, 1);
-
-		// Update Itens
-
-		// UPDATE ON GAME
+		// Atualiza no jogo.
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -16036,53 +16048,57 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 			p.addUint32(el.flag_time);
 			p.addBuffer(&el.stat, sizeof(el.stat));
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// C[0~4] 10 Bytes e mais outras coisas, que tem na struct stItem216 explicando
+			p.addZeroByte(25);    // C[0~4] 10 Bytes e mais outras coisas.
 		}
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Update Count Play Per Day
+		// Atualiza o status de tentativas do jogador.
 		p.init_plain((unsigned short)0xFB);
 
 		if (sPapelShopSystem::getInstance().isLimittedPerDay()) {
 			p.addInt32(_session.m_pi.mi.papel_shop.remain_count);
-			p.addInt32(_session.m_pi.mi.papel_shop.current_count);
-		}else {
+			p.addInt32(-2);                                                // Flag
+		}
+		else {
 			p.addInt32(-1);
-			p.addInt32(-3);
+			p.addInt32(-3);                                                // Flag
 		}
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o Play Papel Shop Big
+		// Resposta para o jogador sobre o Papel Shop BIG.
 		p.init_plain((unsigned short)0x26C);
 
-		p.addUint32(0);		// OK
-
-		p.addInt32(0);		// Big Papel Shop não tem coupon
-
+		p.addUint32(0);        // OK
+		p.addInt32(0);         // Não tem cupom
 		p.addUint32((uint32_t)balls.size());
 
+		// Envia as bolas sorteadas para o jogador.
 		for (auto& el : balls) {
 			p.addUint32(el.color);
 			p.addUint32(el.ctx_psi._typeid);
-			p.addInt32((el.item != 0) ? ((stItem*)el.item)->id : 0);	// Precisa do ID, se não ele add 2 itens, o do pacote 216 e o desse
+			p.addInt32((el.item != 0) ? ((stItem*)el.item)->id : 0);    // Precisa do ID para evitar duplicação
 			p.addUint32(el.qntd);
 			p.addUint32(el.ctx_psi.tipo);
 		}
 
+		// Envia pangs e cookies do jogador para resposta.
 		p.addUint64(_session.m_pi.ui.pang);
-		p.addUint64(_session.m_pi.cookie);
+		p.addUint64(_session.m_pi.ui.pang);
 
 		packet_func::session_send(p, &_session, 1);
 
-		// UPDATE Achievement ON SERVER, DB and GAME
+		// Atualiza e finaliza o Achievement no servidor, banco de dados e jogo.
 		sys_achieve.finish_and_update(_session);
 
-	}catch (exception& e) {
+	}
+	catch (exception& e) {
 
-		_smp::message_pool::getInstance().push(new message("[channel::requestPlayBigPapelShop][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
+		// Em caso de erro, cria um log de erro.
+		_smp::message_pool::getInstance().push(new message("[channel::requestPlayPapelShopBIG][ErroSistema] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
+		// Envia uma resposta de erro para o jogador.
 		p.init_plain((unsigned short)0x26C);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::CHANNEL) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x5900100);
@@ -16090,6 +16106,8 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 		packet_func::session_send(p, &_session, 1);
 	}
 };
+
+
 
 void channel::requestSendMsgChatRoom(player& _session, std::string _msg) {
 	

@@ -51,6 +51,7 @@ namespace stdA {
 			unsigned int  price;
 			unsigned int  sale_price;			// By TH S4 - (Sale Price) Desconto (price - sale_price) = Desconto
 			unsigned int  sell_price;			// By TH S4 - (Used Price) Preço de revenda do item, porém foi feito no beta do season 1, e depois desativado
+			unsigned int  desconto;
 			struct FlagShop {
 				struct _8bits {
 					unsigned char bit0 : 1;
